@@ -1,0 +1,12 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource>
+        <file>rt.png</file>
+        <file>rp.png</file>
+        <file>fav.png</file>
+        <file>protected.png</file>
+        <file>verified.png</file>
+        <file>send.png</file>
+        <file>add.png</file>
+    </qresource>
+</RCC>

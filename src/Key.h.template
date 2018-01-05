@@ -1,0 +1,10 @@
+/*
+ * API Keyなど非公開部分
+ * https://apps.twitter.com で取得してくる。
+ * CONS_KEYにはConsumer Keyを、CONS_SECにはConsumer Secretを設定する。
+ * このファイルの名前をKey.hに変更する
+ * 設定後#errorの行を削除する。
+ * 公開リポジトリなどに入れないようにすべき。
+ */
+#define CONS_KEY    "Consumer Key"
+#define CONS_SEC    "Consumer Secret"
