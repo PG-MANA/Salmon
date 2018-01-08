@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(Salmon CXX)
+project(salmon CXX)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -16,9 +16,9 @@ add_subdirectory(src/Network)
 add_subdirectory(src/Twitter)
 add_subdirectory(src/UI)
 
-add_executable(Salmon src/Salmon.cpp src/Resources/icon/icon.qrc src/Resources/twitter/twitter-icon.qrc) 
+add_executable(salmon src/Salmon.cpp src/Resources/icon/icon.qrc src/Resources/twitter/twitter-icon.qrc) 
 
 #Link libraries
-target_link_libraries(Salmon UI) #UI <= Twitter <= Networkとつながってる...はず
+target_link_libraries(salmon UI) #UI <= Twitter <= Networkとつながってる...はず
 
-install(TARGETS Salmon DESTINATION bin)
+install(TARGETS salmon DESTINATION bin)

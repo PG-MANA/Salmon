@@ -1,0 +1,15 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Categories=KDE;Qt;Network;InstantMessaging;
+Encoding=UTF-8
+Name=Salmon for Linux
+GenericName=Twitter Client for Linux.
+GenericName[ja_JP]=Linux/X11を対象としたTwitter Client
+Comment=Twitter Client for Linux
+Comment[ja_JP]=Linux/X11を対象としたTwitter Client
+Exec=/usr/bin/salmon
+Icon=/usr/share/pixmaps/salmon.png
+Terminal=false
+StartupNotify=true
+Type=Application
+
