@@ -16,11 +16,11 @@
 
 %define APP_NAME              salmon
 %define APP_VERSION         0.0.2
-%define APP_HOMEPAGE    https://mnas.info/soft/salmon./linux/
+%define APP_HOMEPAGE    https://mnas.info/soft/salmon/linux/
 %define APP_LICENCE         Apache License, Version 2.0
 
 Summary: Salmon for Linux
-Summary(ja):Twitter Client for Linux
+Summary(ja):Twitter client for Linux
 Name: %{APP_NAME}
 Source0: %{APP_NAME}-%{APP_VERSION}.tar.gz
 Version: %{APP_VERSION}
@@ -37,8 +37,11 @@ BuildRequires:cmake >= 3.1.0
 %define INSTALLDIR %{buildroot}/usr/local/bin
 
 %description
+The twitter client for linux/X11.
+This software uses qt.So it may be possible to work on macOS or Windows.
+%description -l ja
 Linux/X11を対象としたTwitter Clientです。
-と言ってもQtを使用しているので環境さえ整えばMacやWindowsでも動作すると思います。 
+と言ってもQtを使用しているので環境さえ整えばmacOSやWindowsでも動作すると思います。 
 openSUSE Tumbleweed で開発してます。
 
 %prep
