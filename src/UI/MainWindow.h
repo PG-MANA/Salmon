@@ -41,7 +41,7 @@ class MainWindow : public QMainWindow {
 public:
     explicit MainWindow();
     virtual ~MainWindow();
-    bool init ( char *SettingFile );
+    bool init ( const char *SettingFile );
 
 public slots:
     void show();

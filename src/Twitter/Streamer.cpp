@@ -90,14 +90,14 @@ void Streamer::readStream() {
     json_size=0;
     if ( json.isEmpty() ) return; //デコードエラー
 
-    TwitterJson::TweetData *twdata = new TwitterJson::TweetData ( json );
+    TwitterJson::TweetData *twdata = new TwitterJson::TweetData ( json,twitter->getUserId() );
     if ( !twdata->isEmpty() ) {
         emit newTweet ( twdata );
         return;
     } else {
         delete twdata;
     }
-    TwitterJson::NotificationData *nfdata = new TwitterJson::NotificationData ( json );
+    TwitterJson::NotificationData *nfdata = new TwitterJson::NotificationData ( json,twitter->getUserId() );
     if ( !nfdata->isEmpty() ) {
         emit newNotification ( nfdata );
         return;

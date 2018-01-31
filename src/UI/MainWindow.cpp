@@ -77,7 +77,7 @@ MainWindow::~MainWindow() {
  * 戻値:成功はtrue、失敗はfalse
  * 概要:渡された設定ファイルから設定を読み込み、基本設定を行う。初期化のあとに呼ぶ。
  */
-bool MainWindow::init ( char *setting_file ) {
+bool MainWindow::init ( const char *setting_file ) {
     //設定読み込み
     twset = new TwitterSetting ( setting_file );
     restoreGeometry ( twset->geometry() );
@@ -337,7 +337,7 @@ void MainWindow::showTimeLine() {
 
         for ( int i = tweets.size() - 1; i >= 0  ; i-- ) {
             QJsonObject obj = tweets[i].toObject();
-            TwitterJson::TweetData *twdata = new TwitterJson::TweetData ( obj );
+            TwitterJson::TweetData *twdata = new TwitterJson::TweetData ( obj,twitter->getUserId() );
             if ( !twdata->isEmpty() ) showTweet ( twdata );
         }
     }
@@ -413,7 +413,7 @@ void MainWindow::setAlwayTop ( bool checked ) {
  */
 void MainWindow::showTweet ( TwitterJson::TweetData *twdata ) {
     if ( twdata == nullptr ) return;
-    TweetContent *content = new TweetContent ( twdata, ( twitter->getUserId() == twdata->user_info.id ) ?TweetContent::Master:TweetContent::Normal,this ); //クリックの検出などをするため(Layoutを直接噛ませるのとどちらがいいんだろう)
+    TweetContent *content = new TweetContent ( twdata,TweetContent::Normal,this ); //クリックの検出などをするため(Layoutを直接噛ませるのとどちらがいいんだろう)
 
     connect ( content,&TweetContent::action,this,&MainWindow::contentAction );
 

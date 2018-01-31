@@ -24,10 +24,9 @@ class TweetContent : public QFrame {
 public:
     enum Mode { //主にメニューの表示内容の制御
         Normal,
-        Master,//ツイートの削除などを表示
-        Reply = 1 << 2,
-        Info = 1 << 3,
-        Simple = 1 << 4,
+        Reply = 1 << 1,
+        Info = 1 << 2,
+        Simple = 1 << 3,
     };
 
     explicit TweetContent ( TwitterJson::TweetData *_twdata = nullptr,Mode _mode = Mode::Normal,QWidget *_root_widget = Q_NULLPTR,QWidget* parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags() );
@@ -43,6 +42,7 @@ private slots:
     void openUrl();
     void showPicture ( TwitterJson::TweetData *twdata,unsigned int index );
     void openWindow();
+    void transferAction( TwitterJson::TweetData *ori,unsigned int act );
 
 private:
     virtual void mousePressEvent ( QMouseEvent* event ) override;

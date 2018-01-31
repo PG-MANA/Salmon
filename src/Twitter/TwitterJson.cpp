@@ -62,11 +62,12 @@ RetweetedStatus::RetweetedStatus ( const QJsonObject& json ) {
     user_info = UserInfo ( json["user"].toObject() );
 }
 
-TweetData::TweetData ( QJsonObject& tweet ) {
+TweetData::TweetData ( QJsonObject& tweet,const QByteArray &myid ) {
     if ( tweet.find ( "id" ) == tweet.end() ) return; //IDがないものは処理できないとみなす
     id =  tweet["id_str"].toString().toLatin1().constData();
     via = tweet["source"].toString();//クライアント名
     user_info = UserInfo ( tweet["user"].toObject() );
+    if ( myid == user_info.id ) flag |= 2;
 
     QJsonValue retweet_value = tweet["retweeted_status"];
     if ( retweet_value != QJsonValue::Null/*QJsonValue::Undefinedでないようだ...*/ ) {
@@ -87,7 +88,7 @@ TweetData::TweetData ( QJsonObject& tweet ) {
     //引用ツイート
     if ( QJsonValue quote_value = tweet["quoted_status"]; quote_value != QJsonValue::Null ) {
         QJsonObject tmp = quote_value.toObject();
-        quoted_status = new TweetData ( tmp );
+        quoted_status = new TweetData ( tmp,myid );
     }
     //自分に関する情報を取得
     if ( tweet["retweeted"].toBool() ) flag2 |= 1;
@@ -195,6 +196,15 @@ bool TweetData::isEmpty() {
 /*
  * 引数:なし
  * 戻値:なし
+ * 概要:自分のツイートかどうかを返す
+ */
+bool TweetData::isMytweet() {
+    return flag & ( 1 << 1 );
+}
+
+/*
+ * 引数:なし
+ * 戻値:なし
  * 概要:リツートかどうかを調べて元のツイートのidを返す
  */
 QByteArray & TweetData::getOriginalId() {
@@ -210,7 +220,7 @@ UserInfo & TweetData::getOriginalUserInfo() {
     return retweeted_status?retweeted_status->user_info:user_info;
 }
 
-NotificationData::NotificationData ( const QJsonObject& json ) {
+NotificationData::NotificationData ( const QJsonObject& json,const QByteArray &myid ) {
     QString &&event_name = json["event"].toString();
 
     //ここの文字列を定数化すべきかな
@@ -230,8 +240,12 @@ NotificationData::NotificationData ( const QJsonObject& json ) {
 
     target = UserInfo ( json["target"].toObject() );
     source = UserInfo ( json["source"].toObject() );
+    if ( myid == source.id ) {
+        event == Event::NoEvent;
+        return;
+    }
     QJsonObject &&tweet = json["target_object"].toObject();
-    target_object_tweet = new TweetData ( tweet ); //Listは処理できない(削除はデストラクタに任せる)
+    target_object_tweet = new TweetData ( tweet,myid ); //Listは処理できない(削除はデストラクタに任せる)
     //今の所Listの場合は何もしない
 }
 
