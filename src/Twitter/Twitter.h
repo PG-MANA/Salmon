@@ -49,6 +49,9 @@ public:
     QNetworkReply *media_upload_append ( const QByteArray &media_id,const QByteArray &data,const QByteArray &mime_type );
     QNetworkReply *media_upload_finalize ( const QByteArray &media_id );
 
+    //リスト関係
+    QNetworkReply *get_lists();
+
 protected:
     /*汎用関数。あくまでTwitterクラスから呼ぶもので他のクラス(UIなど)からはこれを呼ばず専用の関数を作る。*/
     void get ( const char *uri,QNetworkRequest &req,std::vector<OAuth::entry> &ele ); //Requestを作成するだけ

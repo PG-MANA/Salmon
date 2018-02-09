@@ -31,4 +31,7 @@ static const char favorite_create[] = "https://api.twitter.com/1.1/favorites/cre
 //アップロード関係
 static const char media_upload[] = "https://upload.twitter.com/1.1/media/upload.json";
 
+//リスト関係
+static const char lists_list[] = "https://api.twitter.com/1.1/lists/list.json";
+
 }

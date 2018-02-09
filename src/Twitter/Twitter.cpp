@@ -261,6 +261,19 @@ QNetworkReply *Twitter::media_upload_finalize ( const QByteArray &media_id ) {
     return net.post ( req,QByteArray ( "command=FINALIZE&media_id=" ) + media_id );
 }
 
+/*
+ * 引数:なし
+ * 戻値:getしたあとのQNetworkReply
+ * 概要:自分の保持してるList一覧を取る。
+ */
+QNetworkReply *Twitter::get_lists() {
+    std::vector<OAuth::entry> ele;
+    QNetworkRequest req;
+    get ( TwitterUrl::lists_list,req,ele );
+    req.setUrl ( QUrl ( TwitterUrl::lists_list ) );
+    //送信
+    return net.get ( req );
+}
 
 /*
  * 引数:uri,req(URLなどをセットしたもの),ele(OAuthで使うもの)

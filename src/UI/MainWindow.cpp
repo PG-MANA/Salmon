@@ -123,6 +123,8 @@ void MainWindow::createMenus() {
     //表示
     QMenu *timeline_menu = menuBar()->addMenu ( tr ( "表示(&V)" ) );
     timeline_menu->setToolTipsVisible ( true );
+    timeline_menu->addAction ( tr ( "ホーム(&H)" ),this,[] {} );
+    list_menu = timeline_menu->addMenu ( tr ( "リスト(&L)" ) );
 
     //ウィンドウ
     QMenu *window_menu = menuBar()->addMenu ( tr ( "ウィンドウ(&W)" ) );
@@ -322,6 +324,21 @@ void MainWindow::changeStatusStream ( bool checked ) {
 void MainWindow::show() {
     QMainWindow::show();
     connect ( twitter->home_timeline(),&QNetworkReply::finished,this,&MainWindow::showTimeLine );
+    connect ( twitter->get_lists(),&QNetworkReply::finished,this,&MainWindow::setListsMenu );
+    return;
+}
+
+/*
+ * 引数:なし
+ * 戻値:なし
+ * 概要:ウィンドウ表示の際、メニューの表示=>リストに所持してるリストを設定する。
+ */
+void MainWindow::setListsMenu() {
+    QNetworkReply *rep = qobject_cast<QNetworkReply*> ( sender() );
+    auto result = TwitterJson::getListInfo ( QJsonDocument::fromJson ( rep->readAll() ).array() );
+    for ( int cnt = 0,len = result.size(); cnt < len; cnt++ ) {
+        list_menu->addAction ( result[cnt].second,this,[] {/*Temporary*/} )->setData ( result[cnt].first );
+    }
     return;
 }
 

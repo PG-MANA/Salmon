@@ -126,5 +126,5 @@ struct NotificationData {
 
 //その他関数
 QString getDeletedTweetId ( const QJsonObject &json );
-
+QVector<QPair<QByteArray,QString>> getListInfo ( const QJsonArray &json );
 };

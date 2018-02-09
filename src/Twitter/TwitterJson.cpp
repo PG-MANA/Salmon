@@ -11,6 +11,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QDateTime>
+#include <QVector>
 
 
 namespace TwitterJson {
@@ -241,7 +242,7 @@ NotificationData::NotificationData ( const QJsonObject& json,const QByteArray &m
     target = UserInfo ( json["target"].toObject() );
     source = UserInfo ( json["source"].toObject() );
     if ( myid == source.id ) {
-        event == Event::NoEvent;
+        event = Event::NoEvent;
         return;
     }
     QJsonObject &&tweet = json["target_object"].toObject();
@@ -271,5 +272,17 @@ QString getDeletedTweetId ( const QJsonObject& json ) {
     return json["delete"].toObject() ["status"].toObject() ["id_str"].toString();
 }
 
+/*
+ * 引数:json(Twitter APIによって返されるJSON[配列])
+ * 戻値:(1個目はList ID、２個目は表示名)の配列
+ * 概要:jsonを解析して、ListIDと名前を返す。
+ */
+QVector<QPair<QByteArray,QString>> getListInfo ( const QJsonArray &json ) {
+    QVector<QPair<QByteArray,QString>> res;
+    for (  int cnt = 0,len = json.size(); cnt < len; cnt++ ) {
+        res.append ( QPair<QByteArray,QString> ( json[cnt].toObject() ["id_str"].toString().toUtf8(),json[cnt].toObject() ["name"].toString() ) );
+    }
+    return res;
+}
 }
 
