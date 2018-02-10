@@ -27,6 +27,7 @@ public:
 public slots:
     void nextImage();
     void backImage();
+    void copy();
     void save();
 private slots:
     void fit();
@@ -38,7 +39,6 @@ private:
     QPushButton *next_button;
     QPushButton *back_button;
     QPushButton *save_button;
-    QPushButton *close_button;
     unsigned int now_index;
     bool first;
     Network net;
