@@ -54,7 +54,7 @@ void ImageViewer::createButtons ( QVBoxLayout *main_layout ) {
     next_button = new QPushButton ( tr ( "次へ(&N)" ) );
     back_button = new QPushButton ( tr ( "前へ(&B)" ) );
     save_button = new QPushButton ( tr ( "名前を付けて保存(&S)" ) );
-    QPushButton *copy_button = new QPushButton ( tr ( "クリップボードにコピー(&P)" ) );
+    QPushButton *copy_button = new QPushButton ( tr ( "コピー(&P)" ) );
     QPushButton *close_button = new QPushButton ( tr ( "閉じる(&C)" ) );
     //アイコン設定
     close_button->setIcon ( style()->standardIcon ( QStyle::SP_TitleBarCloseButton ) ); //直感的に操作できるように
