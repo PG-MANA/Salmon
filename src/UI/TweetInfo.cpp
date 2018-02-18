@@ -63,12 +63,28 @@ void TweetInfo::setImage ( const QPixmap &pixmap,const unsigned int index ) {
     if ( size == 0 ) media_layout->itemAt ( 0 )->widget()->setVisible ( true );
     if ( size <= index ) {
         ImageLabel *iml = new ImageLabel ( 50,50,size );
+        connect ( iml,&ImageLabel::rightClicked,this,&TweetInfo::ImageMenu );
         iml->setPixmap ( pixmap );
         iml->setFixedSize ( 50,50 );
         media_layout->addWidget ( iml );
     } else {
         QLayoutItem *item = media_layout->itemAt ( index + 2/*QLabel + addStretch分*/ );
         if ( item != nullptr ) ( qobject_cast<ImageLabel*> ( item->widget() ) )->setPixmap ( pixmap );
+    }
+    return;
+}
+
+/*
+* 引数:tweetdata,index(0から始まる数で何番目のImageLabelか指定)
+* 戻値:なし
+* 概要:画像を削除するメニューをだす。
+*/
+void TweetInfo::ImageMenu ( TwitterJson::TweetData *_twdata,unsigned int index ) {
+    if ( ImageLabel *label = qobject_cast<ImageLabel *> ( sender() ) ) {
+        QMenu *popup = new QMenu ( tr ( "操作" ),this );
+        popup->setAttribute ( Qt::WA_DeleteOnClose );
+        popup->addAction ( style()->standardIcon ( QStyle::SP_TrashIcon ),tr ( "Delete(&D)" ),this,[this] {if ( QAction *action = qobject_cast<QAction *> ( sender() ) ) deleteImage ( action->data().toUInt() );} )->setData ( index );
+        popup->popup ( QCursor::pos() );
     }
     return;
 }
@@ -83,6 +99,14 @@ void TweetInfo::deleteImage ( const unsigned int index ) {
     QLayoutItem *old = media_layout->takeAt ( index + 2/*QLabel + addStretch分*/ ); //一番最初に追加したやつから番号が振られる。
     if ( old != nullptr ) delete old->widget();
     if ( countImage() == 0 ) media_layout->itemAt ( 0 )->widget()->setVisible ( false );
+    else {
+        for ( int cnt = 0; QLayoutItem *item = media_layout->itemAt ( index + 2 + cnt ); cnt++ ) {
+            if ( ImageLabel *label = qobject_cast<ImageLabel *> ( item->widget() ) ) {
+                label->setIndex ( index + cnt );
+            }
+        }
+    }
+    closeWhenEmpty();
     return;
 }
 
@@ -145,6 +169,7 @@ void TweetInfo::deleteQuoteTweet() {
     QLayoutItem *old = quote_layout->takeAt ( 1 );
     if ( old != nullptr ) old->widget()->deleteLater();//TweetContentからのSignal時にクラッシュしないように
     quote_layout->itemAt ( 0 )->widget()->setVisible ( false );
+    closeWhenEmpty();
     return;
 }
 
@@ -183,5 +208,24 @@ void TweetInfo::deleteReplyTweet() {
     QLayoutItem *old = reply_layout->takeAt ( 1 );
     if ( old != nullptr ) old->widget()->deleteLater();//TweetContentからのSignal時にクラッシュしないように
     reply_layout->itemAt ( 0 )->widget()->setVisible ( false );
+    closeWhenEmpty();
     return;
+}
+
+/*
+ * 引数:なし
+ * 戻値:何もセットされてない場合true、それ以外はfalse
+ * 概要:画像などがセットされてるか返す。
+ */
+bool TweetInfo::isEmpty() {
+    return ! ( reply_layout->itemAt ( 0 )->widget()->isVisible() || quote_layout->itemAt ( 0 )->widget()->isVisible() || media_layout->itemAt ( 0 )->widget()->isVisible() );
+}
+
+/*
+ * 引数:なし
+ * 戻値:なし
+ * 概要:何も中身がないとき非表示にする。
+ */
+void TweetInfo::closeWhenEmpty() {
+    if ( isEmpty() ) parentWidget()->parentWidget()->setVisible ( false );
 }
