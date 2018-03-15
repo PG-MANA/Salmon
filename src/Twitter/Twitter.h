@@ -35,13 +35,13 @@ public:
     void decode_access_token ( const QByteArray &data,TwitterSetting &twset );
 
     //ツイート関係
-    QNetworkReply* tweet ( const QString &message,const QByteArray &media_id=QByteArray() /*ポインタのほうがいいかな...*/,const QByteArray &reply_id=QByteArray() );
+    QNetworkReply* tweet ( const QString &message,const QByteArray &media_id = QByteArray() /*ポインタのほうがいいかな...*/,const QByteArray &reply_id = QByteArray() );
     QNetworkReply* tweet_destroy ( const QByteArray &id );
     QNetworkReply* retweet ( const QByteArray &id );
     QNetworkReply *favorite ( const QByteArray &id );
 
     //取得関係
-    QNetworkReply *home_timeline();
+    QNetworkReply *home_timeline ( const QByteArray &since_id = QByteArray() );
     QNetworkReply *user_stream();
 
     //メディア関係

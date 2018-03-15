@@ -103,14 +103,19 @@ void Twitter::decode_access_token ( const QByteArray &data,TwitterSetting &twset
  * 戻値:getしたあとのQNetworkReply
  * 概要:HomeTimeを取得。API制限に気をつける。
  */
-QNetworkReply *Twitter::home_timeline() {
+QNetworkReply *Twitter::home_timeline ( const QByteArray &since_id ) {
     QNetworkRequest req;
     std::vector<OAuth::entry> ele;
     QUrl qurl ( TwitterUrl::home_timeline );
+    QUrlQuery qurl_query ( "tweet_mode=extended" );
 
-    qurl.setQuery ( QUrlQuery ( "tweet_mode=extended" ) );
-    req.setUrl ( qurl );
+    if ( !since_id.isEmpty() ) {
+        qurl_query.addQueryItem ( "since_id", since_id );
+        ele.push_back ( OAuth::entry {"since_id",since_id.constData(),true} );
+    }
     ele.push_back ( OAuth::entry {"tweet_mode","extended",true} );
+    qurl.setQuery ( qurl_query );
+    req.setUrl ( qurl );
     get ( TwitterUrl::home_timeline,req,ele );
     return net.get ( req );
 }

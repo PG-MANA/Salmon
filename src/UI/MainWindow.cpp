@@ -114,7 +114,7 @@ void MainWindow::createMenus() {
     //設定
     QMenu *setting_menu = menuBar()->addMenu ( tr ( "設定(&S)" ) );
     setting_menu->setToolTipsVisible ( true );
-    QAction *stream_status = setting_menu->addAction ( style()->standardIcon ( QStyle::SP_BrowserReload ), tr ( "ストリーム接続(&S)" ),this,&MainWindow::changeStatusStream );//アイコンの意図が違っていて微妙
+    stream_status = setting_menu->addAction ( style()->standardIcon ( QStyle::SP_BrowserReload ), tr ( "ストリーム接続(&S)" ),this,&MainWindow::changeStatusStream );//アイコンの意図が違っていて微妙
     stream_status->setCheckable ( true );
     stream_status->setChecked ( true );
     stream_status->setToolTip ( tr ( "チェックされるとストリームに接続し、外されると切断します。" ) );
@@ -190,6 +190,14 @@ void MainWindow::createTweetBox() {
     //ツイートボタンボックス
     QHBoxLayout *tweet_button_layout = new QHBoxLayout;//将来ボタンを増やした時のために
     tweet_button_layout->addStretch();
+
+    //Home Time Line更新
+    QPushButton *ReloadButton = new QPushButton;
+    ReloadButton->setIcon ( style()->standardIcon ( QStyle::SP_BrowserReload ) );
+    ReloadButton->setToolTip ( tr ( "タイムラインを更新します。" ) );
+    ReloadButton->setStyleSheet ( "background-color: #255080;" );
+    connect ( ReloadButton,&QPushButton::clicked,this,&MainWindow::updateTimeLine );
+    tweet_button_layout->addWidget ( ReloadButton );
 
     //メディア追加ボタン
     QPushButton *MediaButton = new QPushButton;
@@ -281,8 +289,10 @@ QByteArray MainWindow::pin_dialog() {
  */
 void MainWindow::abortedTimeLine ( unsigned int error ) {
     QMessageBox mes_box;
+
     mes_box.setWindowTitle ( APP_NAME );
     mes_box.setIcon ( QMessageBox::Critical );
+    stream_status->setChecked ( false );
 
     switch ( static_cast<TwitterCore::Error> ( error ) ) {
     case TwitterCore::CannotConnect:
@@ -300,6 +310,7 @@ void MainWindow::abortedTimeLine ( unsigned int error ) {
         mes_box.setText ( tr ( "不明なエラーが発生しました。" ) );
     }
     if ( mes_box.exec() == QMessageBox::Yes ) {
+        stream_status->setChecked ( true );
         QMetaObject::invokeMethod ( timeline_streamer,"startUserStream",Qt::QueuedConnection );
     }
     return;
@@ -360,8 +371,20 @@ void MainWindow::showTimeLine() {
         }
     }
     rep->deleteLater();
-    QMetaObject::invokeMethod ( timeline_streamer,"startUserStream",Qt::QueuedConnection ); //ストリームスタート
+    if ( stream_status->isChecked() ) QMetaObject::invokeMethod ( timeline_streamer,"startUserStream",Qt::QueuedConnection ); //ストリームスタート
     return;
+}
+
+/*
+ * 引数:なし
+ * 戻値:なし
+ * 概要:ホームタイムラインの更新を行う。
+ *  備考:15/15min、つまり平均１分に1回。
+ */
+void MainWindow::updateTimeLine() {
+    if ( const int count = timeline_layout->count(); count > 0 ) {
+        connect ( twitter->home_timeline ( ( qobject_cast<TweetContent *> ( timeline_layout->itemAt ( count - 1 )->widget() ) )->getTweetData()->id ),&QNetworkReply::finished,this,&MainWindow::showTimeLine );
+    }
 }
 
 /*

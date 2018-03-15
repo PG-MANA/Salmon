@@ -40,7 +40,8 @@ void Streamer::setTwitter ( const TwitterSetting *twset ) {
  */
 void Streamer::startUserStream() {
     if ( twitter == nullptr ) emit abort ( TwitterCore::BadPointer );
-    reply=twitter->user_stream();
+    if ( reply != nullptr && reply->isRunning() ) return;
+    reply = twitter->user_stream();
     if ( reply->error() !=QNetworkReply::NoError ) {
         delete reply;
         reply = nullptr;
@@ -60,9 +61,9 @@ void Streamer::stopUserStream() {
     if ( reply != nullptr ) {
         reply->close();
         delete reply;
-        reply=nullptr;
+        reply = nullptr;
     }
-    json_size=0;
+    json_size = 0;
     return;
 }
 
@@ -74,7 +75,7 @@ void Streamer::stopUserStream() {
 void Streamer::readStream() {
     if ( json_size == 0 ) {
         //サイズ取得
-        int max = 22/*longlongの桁数+2(\r\n)*/,size,s,e;
+        int max = 22/*longlongの桁数+2(\r\n)*/, size, s, e;
         QByteArray temp ( reply->peek ( max ) );
         for ( s = 0,size = temp.size(); size > s&&! ( temp.at ( s ) >= '0'&&temp.at ( s ) <= '9' ) ; s++ ); //数字が来るまで飛ばす
         for ( e = s; size > e&&temp.at ( e ) != '\r'; e++ );
@@ -87,7 +88,7 @@ void Streamer::readStream() {
     }
     if ( reply->bytesAvailable() < json_size ) return;
     QJsonObject &&json = QJsonDocument::fromJson ( reply->read ( json_size ) ).object();
-    json_size=0;
+    json_size = 0;
     if ( json.isEmpty() ) return; //デコードエラー
 
     TwitterJson::TweetData *twdata = new TwitterJson::TweetData ( json,twitter->getUserId() );

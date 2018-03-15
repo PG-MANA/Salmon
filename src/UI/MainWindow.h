@@ -52,6 +52,7 @@ public slots:
     void removeTweet ( const QString &id );
     void showNotification ( TwitterJson::NotificationData *nfdata );
     void showTimeLine();
+    void updateTimeLine();
     void showAbout();
     void contentAction ( TwitterJson::TweetData *twdata,unsigned int act );
     void finishedTweet();
@@ -91,6 +92,7 @@ private:
     QBoxLayout *timeline_layout;
     Streamer *timeline_streamer;
     QThread *timeline_thread;
+    QAction *stream_status;
     QSystemTrayIcon *tray_info;//これだとMainWindowが複数できたときにそれごとにトレイに追加されるのでstaticで管理するか、Salmon.cppが管理する必要が出てくるかもしれない。ただし、show()=>showMessage()=>hide()であたかもメッセージだけ表示された感じになる。これもヒープ上に作るのが世の常らしい(QtドキュメントもHeap上に作ってる。)。
     QMenu *list_menu;
     unsigned int MAX_TWDATA =64;//最高ツイートデータ保持数。これを超えると画面・メモリから消される。 TODO:設定から読んで可変にすべき。
