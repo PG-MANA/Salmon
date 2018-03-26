@@ -15,7 +15,7 @@
 #define USER_AGENT           "Salmon for Linux"
 #define APP_NAME             "Salmon"
 #define APP_NAME_LONG   "Salmon for Linux"
-#define APP_VERSION          "0.0.2 Dev"
+#define APP_VERSION          "0.0.2"
 #define APP_HOMEPAGE         "https://mnas.info/soft/salmon/linux/"
 #define APP_COPYRIGHT        "Copyright 2017 PG_MANA"
 
