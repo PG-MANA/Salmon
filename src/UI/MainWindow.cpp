@@ -121,11 +121,11 @@ void MainWindow::createMenus() {
     setting_menu->addAction ( style()->standardIcon ( QStyle::SP_TitleBarCloseButton ),tr ( "終了(&E)" ),qApp,&QApplication::closeAllWindows )->setToolTip ( tr ( "すべてのウィンドウを閉じ、アプリケーションを終了します。" ) );
 
     //表示
-    QMenu *timeline_menu = menuBar()->addMenu ( tr ( "表示(&V)" ) );
+    /*QMenu *timeline_menu = menuBar()->addMenu ( tr ( "表示(&V)" ) );
     timeline_menu->setToolTipsVisible ( true );
     timeline_menu->addAction ( tr ( "ホーム(&H)" ),this,[] {} );
     timeline_menu->addAction ( tr ( "通知(&H)" ),this,[] {} );
-    list_menu = timeline_menu->addMenu ( tr ( "リスト(&L)" ) );
+    list_menu = timeline_menu->addMenu ( tr ( "リスト(&L)" ) );*/
 
     //ウィンドウ
     QMenu *window_menu = menuBar()->addMenu ( tr ( "ウィンドウ(&W)" ) );
@@ -336,7 +336,7 @@ void MainWindow::changeStatusStream ( bool checked ) {
 void MainWindow::show() {
     QMainWindow::show();
     connect ( twitter->home_timeline(),&QNetworkReply::finished,this,&MainWindow::showTimeLine );
-    connect ( twitter->get_lists(),&QNetworkReply::finished,this,&MainWindow::setListsMenu );
+    //connect ( twitter->get_lists(),&QNetworkReply::finished,this,&MainWindow::setListsMenu );
     return;
 }
 
