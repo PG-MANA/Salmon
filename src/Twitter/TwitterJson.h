@@ -28,6 +28,7 @@ struct UserInfo {
     QString screen_name;//スクリーンネーム(ABC)
     QString user_name;
     QString user_icon_url;//ユーザアイコン
+    bool following;
 
     explicit UserInfo ( const QJsonObject &json );
     UserInfo() {};

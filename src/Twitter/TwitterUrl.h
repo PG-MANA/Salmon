@@ -19,6 +19,7 @@ static const char home_timeline[] = "https://api.twitter.com/1.1/statuses/home_t
 
 //ストリーム関係
 static const char user_stream[] = "https://userstream.twitter.com/1.1/user.json";
+static const char filter_stream[] = "https://stream.twitter.com/1.1/statuses/filter.json";
 
 //ツイート関係
 static const char statuse_update[] = "https://api.twitter.com/1.1/statuses/update.json";
@@ -34,4 +35,6 @@ static const char media_upload[] = "https://upload.twitter.com/1.1/media/upload.
 //リスト関係
 static const char lists_list[] = "https://api.twitter.com/1.1/lists/list.json";
 
+//ユーザ関係
+static const char friends_ids[] = "https://api.twitter.com/1.1/friends/ids.json";
 }

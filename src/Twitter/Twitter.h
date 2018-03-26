@@ -43,11 +43,15 @@ public:
     //取得関係
     QNetworkReply *home_timeline ( const QByteArray &since_id = QByteArray() );
     QNetworkReply *user_stream();
+    QNetworkReply *filter_stream(const QByteArray &follow);
 
     //メディア関係
     QNetworkReply *media_upload_init ( const QByteArray &total_bytes,const QByteArray &media_type );
     QNetworkReply *media_upload_append ( const QByteArray &media_id,const QByteArray &data,const QByteArray &mime_type );
     QNetworkReply *media_upload_finalize ( const QByteArray &media_id );
+
+    //ユーザ関係
+    QNetworkReply *friends_ids ( const QByteArray &cursor = QByteArray() );
 
     //リスト関係
     QNetworkReply *get_lists();

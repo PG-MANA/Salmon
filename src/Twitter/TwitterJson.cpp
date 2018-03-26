@@ -8,6 +8,7 @@
  * TwitterのAPIで得られるJSONを各種解析する。
  */
 #include "TwitterJson.h"
+#include "../Salmon.h"
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QDateTime>
@@ -279,7 +280,7 @@ QString getDeletedTweetId ( const QJsonObject& json ) {
  */
 QVector<QPair<QByteArray,QString>> getListInfo ( const QJsonArray &json ) {
     QVector<QPair<QByteArray,QString>> res;
-    for (  int cnt = 0,len = json.size(); cnt < len; cnt++ ) {
+    for ( int cnt = 0,len = json.size(); cnt < len; cnt++ ) {
         res.append ( QPair<QByteArray,QString> ( json[cnt].toObject() ["id_str"].toString().toUtf8(),json[cnt].toObject() ["name"].toString() ) );
     }
     return res;

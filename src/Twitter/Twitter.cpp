@@ -138,6 +138,23 @@ QNetworkReply *Twitter::user_stream() {
 }
 
 /*
+ * 引数:なし
+ * 戻値:getしたあとのQNetworkReply
+ * 概要:FilterStream、特定の条件を満たしたツイートを取れる。
+ */
+QNetworkReply *Twitter::filter_stream ( const QByteArray &follow ) {
+    QNetworkRequest req;
+    std::vector<OAuth::entry> ele;
+    QUrl qurl ( TwitterUrl::filter_stream );
+
+    req.setUrl ( qurl );
+    ele.push_back ( OAuth::entry {"delimited","length",true} );
+    ele.push_back ( OAuth::entry {"follow",follow.constData(),true} );
+    post ( TwitterUrl::filter_stream,req,ele );
+    return  net.post ( req ,"delimited=length&follow=" + follow );
+}
+
+/*
  * 引数:message(ツイート内容)
  * 戻値:結果取得用のQNetworkReply
  * 概要:messageをツイートする。
@@ -277,6 +294,28 @@ QNetworkReply *Twitter::get_lists() {
     get ( TwitterUrl::lists_list,req,ele );
     req.setUrl ( QUrl ( TwitterUrl::lists_list ) );
     //送信
+    return net.get ( req );
+}
+
+/*
+ * 引数:なし
+ * 戻値:getしたあとのQNetworkReply
+ * 概要:自分のフォローしてるアカウントのID一覧を取る。
+ */
+QNetworkReply *Twitter::friends_ids ( const QByteArray& cursor ) {
+    QNetworkRequest req;
+    std::vector<OAuth::entry> ele;
+    QUrl qurl ( TwitterUrl::friends_ids );
+    QUrlQuery qurl_query ( "stringify_ids=true" );
+
+    if ( !cursor.isEmpty() ) {
+        qurl_query.addQueryItem ( "cursor", cursor );
+        ele.push_back ( OAuth::entry {"cursor",cursor.constData(),true} );
+    }
+    ele.push_back ( OAuth::entry {"stringify_ids","true",true} );
+    qurl.setQuery ( qurl_query );
+    req.setUrl ( qurl );
+    get ( TwitterUrl::friends_ids,req,ele );
     return net.get ( req );
 }
 

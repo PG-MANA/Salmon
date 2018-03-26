@@ -372,6 +372,11 @@ void MainWindow::showTimeLine() {
     }
     rep->deleteLater();
     if ( stream_status->isChecked() ) QMetaObject::invokeMethod ( timeline_streamer,"startUserStream",Qt::QueuedConnection ); //ストリームスタート
+#if ENABLE_NEW_STREAM
+    tray_info->show();
+     tray_info->showMessage ( APP_NAME,tr("現在UserStreamの代替としてFilterStreamを使用しています。これにより次のような仕様となっています。\n・鍵アカウントのツイートは取得できません。\n・フォロー通知などを受信できません。\n・フォローしていないアカウントへの返信を表示します。\n・5,000人以上フォローしているアカウントはすべてのツイートを表示できません。\n・全体的な動作が重くなります。") );
+     tray_info->hide();
+#endif
     return;
 }
 

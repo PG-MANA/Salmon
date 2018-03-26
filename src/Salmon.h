@@ -18,3 +18,5 @@
 #define APP_VERSION          "0.0.2 Dev"
 #define APP_HOMEPAGE         "https://mnas.info/soft/salmon/linux/"
 #define APP_COPYRIGHT        "Copyright 2017 PG_MANA"
+
+#define ENABLE_NEW_STREAM   false
