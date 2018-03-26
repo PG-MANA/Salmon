@@ -54,21 +54,25 @@ void ImageViewer::createButtons ( QVBoxLayout *main_layout ) {
     next_button = new QPushButton ( tr ( "次へ(&N)" ) );
     back_button = new QPushButton ( tr ( "前へ(&B)" ) );
     save_button = new QPushButton ( tr ( "名前を付けて保存(&S)" ) );
-    close_button = new QPushButton ( tr ( "閉じる(&C)" ) );
+    QPushButton *copy_button = new QPushButton ( tr ( "コピー(&P)" ) );
+    QPushButton *close_button = new QPushButton ( tr ( "閉じる(&C)" ) );
     //アイコン設定
-    close_button->setIcon ( this->style()->standardIcon ( QStyle::SP_TitleBarCloseButton ) ); //直感的に操作できるように
-    next_button->setIcon ( this->style()->standardIcon ( QStyle::SP_ArrowRight ) );
-    save_button->setIcon ( this->style()->standardIcon ( QStyle::SP_DialogSaveButton ) );
-    back_button->setIcon ( this->style()->standardIcon ( QStyle::SP_ArrowLeft ) );
+    close_button->setIcon ( style()->standardIcon ( QStyle::SP_TitleBarCloseButton ) ); //直感的に操作できるように
+    next_button->setIcon ( style()->standardIcon ( QStyle::SP_ArrowRight ) );
+    save_button->setIcon ( style()->standardIcon ( QStyle::SP_DialogSaveButton ) );
+    copy_button->setIcon ( style()->standardIcon ( QStyle::SP_FileIcon ) );
+    back_button->setIcon ( style()->standardIcon ( QStyle::SP_ArrowLeft ) );
     //イベント接続
     connect ( close_button,&QPushButton::clicked,this,&ImageViewer::close );
     connect ( next_button,&QPushButton::clicked,this,&ImageViewer::nextImage );
     connect ( back_button,&QPushButton::clicked,this,&ImageViewer::backImage );
+    connect ( copy_button,&QPushButton::clicked,this,&ImageViewer::copy );
     connect ( save_button,&QPushButton::clicked,this,&ImageViewer::save );
     //格納
     button_layout->addWidget ( back_button );
     button_layout->addWidget ( next_button );
     button_layout->addWidget ( save_button );
+    button_layout->addWidget ( copy_button );
     button_layout->addWidget ( close_button );
     main_layout->addLayout ( button_layout );
     return;
@@ -127,6 +131,17 @@ void ImageViewer::backImage() {
     setImage ( media_data.direct_links.at ( now_index ) );
     next_button->setEnabled ( true );
     if ( now_index == 0 ) back_button->setEnabled ( false );
+    return;
+}
+
+/*
+ * 引数:なし
+ * 戻値:なし
+ * 概要:ImageLabelにセットされている画像をクリップボードにコピーする。
+ */
+void ImageViewer::copy() {
+    if ( !save_button->isEnabled() ) return; //作業中
+    if ( const QPixmap *pixmap = iml->pixmap() ) QApplication::clipboard()->setPixmap ( *pixmap );
     return;
 }
 

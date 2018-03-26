@@ -35,19 +35,26 @@ public:
     void decode_access_token ( const QByteArray &data,TwitterSetting &twset );
 
     //ツイート関係
-    QNetworkReply* tweet ( const QString &message,const QByteArray &media_id=QByteArray() /*ポインタのほうがいいかな...*/,const QByteArray &reply_id=QByteArray() );
+    QNetworkReply* tweet ( const QString &message,const QByteArray &media_id = QByteArray() /*ポインタのほうがいいかな...*/,const QByteArray &reply_id = QByteArray() );
     QNetworkReply* tweet_destroy ( const QByteArray &id );
     QNetworkReply* retweet ( const QByteArray &id );
     QNetworkReply *favorite ( const QByteArray &id );
 
     //取得関係
-    QNetworkReply *home_timeline();
+    QNetworkReply *home_timeline ( const QByteArray &since_id = QByteArray() );
     QNetworkReply *user_stream();
+    QNetworkReply *filter_stream(const QByteArray &follow);
 
     //メディア関係
     QNetworkReply *media_upload_init ( const QByteArray &total_bytes,const QByteArray &media_type );
     QNetworkReply *media_upload_append ( const QByteArray &media_id,const QByteArray &data,const QByteArray &mime_type );
     QNetworkReply *media_upload_finalize ( const QByteArray &media_id );
+
+    //ユーザ関係
+    QNetworkReply *friends_ids ( const QByteArray &cursor = QByteArray() );
+
+    //リスト関係
+    QNetworkReply *get_lists();
 
 protected:
     /*汎用関数。あくまでTwitterクラスから呼ぶもので他のクラス(UIなど)からはこれを呼ばず専用の関数を作る。*/

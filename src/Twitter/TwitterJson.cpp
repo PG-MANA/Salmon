@@ -8,9 +8,11 @@
  * TwitterのAPIで得られるJSONを各種解析する。
  */
 #include "TwitterJson.h"
+#include "../Salmon.h"
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QDateTime>
+#include <QVector>
 
 
 namespace TwitterJson {
@@ -62,11 +64,12 @@ RetweetedStatus::RetweetedStatus ( const QJsonObject& json ) {
     user_info = UserInfo ( json["user"].toObject() );
 }
 
-TweetData::TweetData ( QJsonObject& tweet ) {
+TweetData::TweetData ( QJsonObject& tweet,const QByteArray &myid ) {
     if ( tweet.find ( "id" ) == tweet.end() ) return; //IDがないものは処理できないとみなす
     id =  tweet["id_str"].toString().toLatin1().constData();
     via = tweet["source"].toString();//クライアント名
     user_info = UserInfo ( tweet["user"].toObject() );
+    if ( myid == user_info.id ) flag |= 2;
 
     QJsonValue retweet_value = tweet["retweeted_status"];
     if ( retweet_value != QJsonValue::Null/*QJsonValue::Undefinedでないようだ...*/ ) {
@@ -87,7 +90,7 @@ TweetData::TweetData ( QJsonObject& tweet ) {
     //引用ツイート
     if ( QJsonValue quote_value = tweet["quoted_status"]; quote_value != QJsonValue::Null ) {
         QJsonObject tmp = quote_value.toObject();
-        quoted_status = new TweetData ( tmp );
+        quoted_status = new TweetData ( tmp,myid );
     }
     //自分に関する情報を取得
     if ( tweet["retweeted"].toBool() ) flag2 |= 1;
@@ -195,6 +198,15 @@ bool TweetData::isEmpty() {
 /*
  * 引数:なし
  * 戻値:なし
+ * 概要:自分のツイートかどうかを返す
+ */
+bool TweetData::isMytweet() {
+    return flag & ( 1 << 1 );
+}
+
+/*
+ * 引数:なし
+ * 戻値:なし
  * 概要:リツートかどうかを調べて元のツイートのidを返す
  */
 QByteArray & TweetData::getOriginalId() {
@@ -210,7 +222,7 @@ UserInfo & TweetData::getOriginalUserInfo() {
     return retweeted_status?retweeted_status->user_info:user_info;
 }
 
-NotificationData::NotificationData ( const QJsonObject& json ) {
+NotificationData::NotificationData ( const QJsonObject& json,const QByteArray &myid ) {
     QString &&event_name = json["event"].toString();
 
     //ここの文字列を定数化すべきかな
@@ -230,8 +242,12 @@ NotificationData::NotificationData ( const QJsonObject& json ) {
 
     target = UserInfo ( json["target"].toObject() );
     source = UserInfo ( json["source"].toObject() );
+    if ( myid == source.id ) {
+        event = Event::NoEvent;
+        return;
+    }
     QJsonObject &&tweet = json["target_object"].toObject();
-    target_object_tweet = new TweetData ( tweet ); //Listは処理できない(削除はデストラクタに任せる)
+    target_object_tweet = new TweetData ( tweet,myid ); //Listは処理できない(削除はデストラクタに任せる)
     //今の所Listの場合は何もしない
 }
 
@@ -257,5 +273,17 @@ QString getDeletedTweetId ( const QJsonObject& json ) {
     return json["delete"].toObject() ["status"].toObject() ["id_str"].toString();
 }
 
+/*
+ * 引数:json(Twitter APIによって返されるJSON[配列])
+ * 戻値:(1個目はList ID、２個目は表示名)の配列
+ * 概要:jsonを解析して、ListIDと名前を返す。
+ */
+QVector<QPair<QByteArray,QString>> getListInfo ( const QJsonArray &json ) {
+    QVector<QPair<QByteArray,QString>> res;
+    for ( int cnt = 0,len = json.size(); cnt < len; cnt++ ) {
+        res.append ( QPair<QByteArray,QString> ( json[cnt].toObject() ["id_str"].toString().toUtf8(),json[cnt].toObject() ["name"].toString() ) );
+    }
+    return res;
+}
 }
 

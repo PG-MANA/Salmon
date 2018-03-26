@@ -77,7 +77,7 @@ MainWindow::~MainWindow() {
  * 戻値:成功はtrue、失敗はfalse
  * 概要:渡された設定ファイルから設定を読み込み、基本設定を行う。初期化のあとに呼ぶ。
  */
-bool MainWindow::init ( char *setting_file ) {
+bool MainWindow::init ( const char *setting_file ) {
     //設定読み込み
     twset = new TwitterSetting ( setting_file );
     restoreGeometry ( twset->geometry() );
@@ -114,15 +114,18 @@ void MainWindow::createMenus() {
     //設定
     QMenu *setting_menu = menuBar()->addMenu ( tr ( "設定(&S)" ) );
     setting_menu->setToolTipsVisible ( true );
-    QAction *stream_status = setting_menu->addAction ( style()->standardIcon ( QStyle::SP_BrowserReload ), tr ( "ストリーム接続(&S)" ),this,&MainWindow::changeStatusStream );//アイコンの意図が違っていて微妙
+    stream_status = setting_menu->addAction ( style()->standardIcon ( QStyle::SP_BrowserReload ), tr ( "ストリーム接続(&S)" ),this,&MainWindow::changeStatusStream );//アイコンの意図が違っていて微妙
     stream_status->setCheckable ( true );
     stream_status->setChecked ( true );
     stream_status->setToolTip ( tr ( "チェックされるとストリームに接続し、外されると切断します。" ) );
     setting_menu->addAction ( style()->standardIcon ( QStyle::SP_TitleBarCloseButton ),tr ( "終了(&E)" ),qApp,&QApplication::closeAllWindows )->setToolTip ( tr ( "すべてのウィンドウを閉じ、アプリケーションを終了します。" ) );
 
     //表示
-    QMenu *timeline_menu = menuBar()->addMenu ( tr ( "表示(&V)" ) );
+    /*QMenu *timeline_menu = menuBar()->addMenu ( tr ( "表示(&V)" ) );
     timeline_menu->setToolTipsVisible ( true );
+    timeline_menu->addAction ( tr ( "ホーム(&H)" ),this,[] {} );
+    timeline_menu->addAction ( tr ( "通知(&H)" ),this,[] {} );
+    list_menu = timeline_menu->addMenu ( tr ( "リスト(&L)" ) );*/
 
     //ウィンドウ
     QMenu *window_menu = menuBar()->addMenu ( tr ( "ウィンドウ(&W)" ) );
@@ -187,6 +190,14 @@ void MainWindow::createTweetBox() {
     //ツイートボタンボックス
     QHBoxLayout *tweet_button_layout = new QHBoxLayout;//将来ボタンを増やした時のために
     tweet_button_layout->addStretch();
+
+    //Home Time Line更新
+    QPushButton *ReloadButton = new QPushButton;
+    ReloadButton->setIcon ( style()->standardIcon ( QStyle::SP_BrowserReload ) );
+    ReloadButton->setToolTip ( tr ( "タイムラインを更新します。" ) );
+    ReloadButton->setStyleSheet ( "background-color: #255080;" );
+    connect ( ReloadButton,&QPushButton::clicked,this,&MainWindow::updateTimeLine );
+    tweet_button_layout->addWidget ( ReloadButton );
 
     //メディア追加ボタン
     QPushButton *MediaButton = new QPushButton;
@@ -278,8 +289,10 @@ QByteArray MainWindow::pin_dialog() {
  */
 void MainWindow::abortedTimeLine ( unsigned int error ) {
     QMessageBox mes_box;
+
     mes_box.setWindowTitle ( APP_NAME );
     mes_box.setIcon ( QMessageBox::Critical );
+    stream_status->setChecked ( false );
 
     switch ( static_cast<TwitterCore::Error> ( error ) ) {
     case TwitterCore::CannotConnect:
@@ -297,6 +310,7 @@ void MainWindow::abortedTimeLine ( unsigned int error ) {
         mes_box.setText ( tr ( "不明なエラーが発生しました。" ) );
     }
     if ( mes_box.exec() == QMessageBox::Yes ) {
+        stream_status->setChecked ( true );
         QMetaObject::invokeMethod ( timeline_streamer,"startUserStream",Qt::QueuedConnection );
     }
     return;
@@ -322,6 +336,21 @@ void MainWindow::changeStatusStream ( bool checked ) {
 void MainWindow::show() {
     QMainWindow::show();
     connect ( twitter->home_timeline(),&QNetworkReply::finished,this,&MainWindow::showTimeLine );
+    //connect ( twitter->get_lists(),&QNetworkReply::finished,this,&MainWindow::setListsMenu );
+    return;
+}
+
+/*
+ * 引数:なし
+ * 戻値:なし
+ * 概要:ウィンドウ表示の際、メニューの表示=>リストに所持してるリストを設定する。
+ */
+void MainWindow::setListsMenu() {
+    QNetworkReply *rep = qobject_cast<QNetworkReply*> ( sender() );
+    auto result = TwitterJson::getListInfo ( QJsonDocument::fromJson ( rep->readAll() ).array() );
+    for ( int cnt = 0,len = result.size(); cnt < len; cnt++ ) {
+        list_menu->addAction ( result[cnt].second,this,[] {/*Temporary*/} )->setData ( result[cnt].first );
+    }
     return;
 }
 
@@ -337,13 +366,30 @@ void MainWindow::showTimeLine() {
 
         for ( int i = tweets.size() - 1; i >= 0  ; i-- ) {
             QJsonObject obj = tweets[i].toObject();
-            TwitterJson::TweetData *twdata = new TwitterJson::TweetData ( obj );
+            TwitterJson::TweetData *twdata = new TwitterJson::TweetData ( obj,twitter->getUserId() );
             if ( !twdata->isEmpty() ) showTweet ( twdata );
         }
     }
     rep->deleteLater();
-    QMetaObject::invokeMethod ( timeline_streamer,"startUserStream",Qt::QueuedConnection ); //ストリームスタート
+    if ( stream_status->isChecked() ) QMetaObject::invokeMethod ( timeline_streamer,"startUserStream",Qt::QueuedConnection ); //ストリームスタート
+#if ENABLE_NEW_STREAM
+    tray_info->show();
+     tray_info->showMessage ( APP_NAME,tr("現在UserStreamの代替としてFilterStreamを使用しています。これにより次のような仕様となっています。\n・鍵アカウントのツイートは取得できません。\n・フォロー通知などを受信できません。\n・フォローしていないアカウントへの返信を表示します。\n・5,000人以上フォローしているアカウントはすべてのツイートを表示できません。\n・全体的な動作が重くなります。") );
+     tray_info->hide();
+#endif
     return;
+}
+
+/*
+ * 引数:なし
+ * 戻値:なし
+ * 概要:ホームタイムラインの更新を行う。
+ *  備考:15/15min、つまり平均１分に1回。
+ */
+void MainWindow::updateTimeLine() {
+    if ( const int count = timeline_layout->count(); count > 0 ) {
+        connect ( twitter->home_timeline ( ( qobject_cast<TweetContent *> ( timeline_layout->itemAt ( count - 1 )->widget() ) )->getTweetData()->id ),&QNetworkReply::finished,this,&MainWindow::showTimeLine );
+    }
 }
 
 /*
@@ -413,7 +459,7 @@ void MainWindow::setAlwayTop ( bool checked ) {
  */
 void MainWindow::showTweet ( TwitterJson::TweetData *twdata ) {
     if ( twdata == nullptr ) return;
-    TweetContent *content = new TweetContent ( twdata, ( twitter->getUserId() == twdata->user_info.id ) ?TweetContent::Master:TweetContent::Normal,this ); //クリックの検出などをするため(Layoutを直接噛ませるのとどちらがいいんだろう)
+    TweetContent *content = new TweetContent ( twdata,TweetContent::Normal,this ); //クリックの検出などをするため(Layoutを直接噛ませるのとどちらがいいんだろう)
 
     connect ( content,&TweetContent::action,this,&MainWindow::contentAction );
 

@@ -33,12 +33,15 @@ public:
     TwitterJson::TweetData *getReplyTweet();
     void setReplyTweet ( TweetContent *data );
     unsigned int countImage() const;
+    bool isEmpty();
 
 public slots:
     void deleteQuoteTweet();
     void deleteReplyTweet();
+    void ImageMenu(TwitterJson::TweetData *twdata,unsigned int index);
 
 private:
+    void closeWhenEmpty();
     MainWindow *win;
     QVBoxLayout *main_layout;
     QHBoxLayout *media_layout;

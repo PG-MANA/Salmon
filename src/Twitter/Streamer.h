@@ -40,9 +40,11 @@ public slots:
     void stopUserStream();
     void readStream();
     void finishedStream();
+    void startFilterStream();
 
 protected:
     qint64 json_size;
+    QString friend_ids;
     Twitter *twitter;
     QNetworkReply *reply;
 };

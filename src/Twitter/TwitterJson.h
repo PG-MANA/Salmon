@@ -28,6 +28,7 @@ struct UserInfo {
     QString screen_name;//スクリーンネーム(ABC)
     QString user_name;
     QString user_icon_url;//ユーザアイコン
+    bool following;
 
     explicit UserInfo ( const QJsonObject &json );
     UserInfo() {};
@@ -78,17 +79,18 @@ struct TweetData {
     UrlInfo *url_info = nullptr;
     TweetData *quoted_status = nullptr;
 
-    char flag = 0 ;// 1bit目: RTなら1 2bit目:favoriteかどうか 3bit目 : リプかどうか 4bit目 : DMかどうか 5bit目:5:鍵アカかどうか 6bit目:公式(確認済み)かどうか(RTの場合はツイート主が公式かどうか) 7bit目:possibly_sensitiveが設定されてるかどうか。
+    char flag = 0 ;// 1bit目: RTなら1 2bit目:自分のツイートか 3bit目 : リプかどうか 4bit目 : DMかどうか 5bit目:5:鍵アカかどうか 6bit目:公式(確認済み)かどうか(RTの場合はツイート主が公式かどうか) 7bit目:possibly_sensitiveが設定されてるかどうか。
     char flag2 = 0;// 1bit目 : 1ならRT済み 2bit目 : 1ならfav済み
 
     //メソッド
-    explicit TweetData ( QJsonObject &tweet );
+    explicit TweetData ( QJsonObject &tweet,const QByteArray &myid/*自分のユーザID*/ );
     explicit TweetData ( const TweetData &other );
     /*virtual*/ ~TweetData();
     void setTextWithDecode ( QString &text );
     void setTextByJson ( const QJsonObject &json );
     void setDateByString ( const QString &created_at );
     bool isEmpty();
+    bool isMytweet();
     /*inline*/ QByteArray &getOriginalId();
     /*inline*/ UserInfo &getOriginalUserInfo();
 };
@@ -118,12 +120,12 @@ struct NotificationData {
     UserInfo source;
     TweetData *target_object_tweet = nullptr;//Tweetの場合はこれ、それ以外の場合はnullptr
 
-    explicit NotificationData ( const QJsonObject &json );
+    explicit NotificationData ( const QJsonObject &json,const QByteArray &myid );
     /*virtual*/ ~NotificationData();
     bool isEmpty();
 };
 
 //その他関数
 QString getDeletedTweetId ( const QJsonObject &json );
-
+QVector<QPair<QByteArray,QString>> getListInfo ( const QJsonArray &json );
 };

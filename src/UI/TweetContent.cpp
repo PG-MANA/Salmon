@@ -99,7 +99,7 @@ void TweetContent::createActions() {
     popup->addAction ( QIcon ( ":/fav.png" ),tr ( "Favorite(&F)" ),this,&TweetContent::triggeredAction )->setData ( TwitterCore::Action::Favorite );
 
     //削除(権限がある場合)
-    if ( mode & Mode::Master ) popup->addAction ( style()->standardIcon ( QStyle::SP_TitleBarCloseButton ) /*少し意図がずれてる気が*/,tr ( "Delete(&D)" ),this,&TweetContent::triggeredAction )->setData ( TwitterCore::Action::Destroy );
+    if ( twdata->isMytweet() ) popup->addAction ( style()->standardIcon ( QStyle::SP_TitleBarCloseButton ) /*少し意図がずれてる気が*/,tr ( "Delete(&D)" ),this,&TweetContent::triggeredAction )->setData ( TwitterCore::Action::Destroy );
 
     //新しいウィンドウで開く(取っておきたいなど)
     popup->addAction ( style()->standardIcon ( QStyle::SP_TitleBarMaxButton ),tr ( "Open in new window(&W)" ),this,&TweetContent::openWindow );
@@ -127,8 +127,7 @@ void TweetContent::createActions() {
 * 備考:各種設定をしてQtでenumを認識できるようにしてもdata().vaiue<TwitterCore::Action>で取り出せないので諦めてuintでわたす。
 */
 void TweetContent::triggeredAction() {
-    emit action ( twdata, ( qobject_cast<QAction*> ( sender() ) )->data().toUInt() );
-    return;
+    return emit action ( twdata, ( qobject_cast<QAction*> ( sender() ) )->data().toUInt() );
 }
 
 /*
@@ -218,6 +217,7 @@ void TweetContent::drawTweet() {
     //引用ツイート
     if ( twdata->quoted_status && ! ( mode & Mode::Info ) && ! ( mode & Mode::Simple ) ) {
         TweetContent *quote = new TweetContent ( new TwitterJson::TweetData ( *twdata->quoted_status ),Mode::Simple,root_widget );
+        connect ( quote,&TweetContent::action,this,&TweetContent::transferAction );
         quote->setFrameShape ( QFrame::StyledPanel );
         quote->setFrameShadow ( QFrame::Sunken );
         text_box->addWidget ( quote );
@@ -267,4 +267,13 @@ void TweetContent::openWindow() {
     window->resize ( sizeHint() );
     window->show();
     return;
+}
+
+/*
+ * 引数:ori(root_widgetに手渡すTweetData、act(選択された操作)
+ * 戻値:なし
+ * 概要:root_widgetにactionシグナルを転送する。もっといい方法ないかな。
+ */
+void TweetContent::transferAction ( TwitterJson::TweetData* ori, unsigned int act ) {
+    return emit action ( ori,act );
 }

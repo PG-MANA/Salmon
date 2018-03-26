@@ -15,7 +15,7 @@
 
 QHash<QString,QPixmap> ImageLabel::images;
 
-ImageLabel::ImageLabel ( unsigned int _sizex,unsigned int _sizey,unsigned int _index,TweetContent *_parent_content,QWidget *parent, Qt::WindowFlags f )
+ImageLabel::ImageLabel ( const unsigned int _sizex,const unsigned int _sizey,const unsigned int _index,TweetContent *_parent_content,QWidget *parent, Qt::WindowFlags f )
     :QLabel ( parent,f ),parent_content ( _parent_content ),index ( _index ),sizex ( _sizex ),sizey ( _sizey ) {
 }
 
@@ -96,6 +96,26 @@ void ImageLabel::getSize ( unsigned int &_sizex,unsigned int &_sizey ) {
 }
 
 /*
+ * 引数:なし
+ * 戻値:index(画像が何番目か)
+ * 概要:Layoutなどで画像が何番目かを返す。
+ */
+unsigned int ImageLabel::getIndex() {
+    return index;
+}
+
+/*
+ * 引数:index(画像が何番目か)
+ * 戻値:なし
+ * 概要:Layoutなどで画像が何番目かを変更する。
+ */
+void ImageLabel::setIndex ( unsigned int i ) {
+    index = i;
+    return;
+}
+
+
+/*
  * 引数:event
  * 戻値:なし
  * 概要:クリックされたときにシグナルを発信する。
@@ -105,6 +125,9 @@ void ImageLabel::mousePressEvent ( QMouseEvent* event ) {
     switch ( event->button() ) {
     case Qt::LeftButton:
         emit clicked ( ( parent_content ) ?parent_content->getTweetData() :nullptr,index );
+        break;
+    case Qt::RightButton:
+        emit rightClicked ( ( parent_content ) ?parent_content->getTweetData() :nullptr,index );
         break;
     default:
         event->ignore();
