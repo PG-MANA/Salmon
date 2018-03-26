@@ -127,8 +127,7 @@ void TweetContent::createActions() {
 * 備考:各種設定をしてQtでenumを認識できるようにしてもdata().vaiue<TwitterCore::Action>で取り出せないので諦めてuintでわたす。
 */
 void TweetContent::triggeredAction() {
-    emit action ( twdata, ( qobject_cast<QAction*> ( sender() ) )->data().toUInt() );
-    return;
+    return emit action ( twdata, ( qobject_cast<QAction*> ( sender() ) )->data().toUInt() );
 }
 
 /*
@@ -276,6 +275,5 @@ void TweetContent::openWindow() {
  * 概要:root_widgetにactionシグナルを転送する。もっといい方法ないかな。
  */
 void TweetContent::transferAction ( TwitterJson::TweetData* ori, unsigned int act ) {
-    emit action ( ori,act );
-    return;
+    return emit action ( ori,act );
 }

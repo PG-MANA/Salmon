@@ -42,26 +42,26 @@ void Streamer::setTwitter ( const TwitterSetting *twset ) {
  */
 #if ENABLE_NEW_STREAM
 void Streamer::startUserStream() {
-    if ( twitter == nullptr ) emit abort ( TwitterCore::BadPointer );
+    if ( twitter == nullptr ) return emit abort ( TwitterCore::BadPointer );
     if ( reply != nullptr && reply->isRunning() ) return;
     reply = twitter->friends_ids();
     if ( reply->error() !=QNetworkReply::NoError ) {
         delete reply;
         reply = nullptr;
-        emit abort ( TwitterCore::CannotConnect );
+        return emit abort ( TwitterCore::CannotConnect );
     }
     connect ( reply,&QNetworkReply::finished,this,&Streamer::startFilterStream );
     return;
 }
 #else
 void Streamer::startUserStream() {
-    if ( twitter == nullptr ) emit abort ( TwitterCore::BadPointer );
+    if ( twitter == nullptr ) return emit abort ( TwitterCore::BadPointer );
     if ( reply != nullptr && reply->isRunning() ) return;
     reply = twitter->user_stream();
     if ( reply->error() !=QNetworkReply::NoError ) {
         delete reply;
         reply = nullptr;
-        emit abort ( TwitterCore::CannotConnect );
+        return emit abort ( TwitterCore::CannotConnect );
     }
     connect ( reply,&QNetworkReply::readyRead,this,&Streamer::readStream ); //qnet->getの前にconnectしたい(ただQtのサンプルを見る限り間違った実装ではなさそう)
     connect ( reply,&QNetworkReply::finished,this,&Streamer::finishedStream );
@@ -78,7 +78,7 @@ void Streamer::startFilterStream() {
     if ( reply->error() !=QNetworkReply::NoError ) {
         delete reply;
         reply = nullptr;
-        emit abort ( TwitterCore::CannotConnect );
+        return emit abort ( TwitterCore::CannotConnect );
     }
     friend_ids.reserve ( reply->size() );
     QJsonArray &&friends = QJsonDocument::fromJson ( reply->readAll() ).object() ["ids"].toArray();
@@ -91,7 +91,7 @@ void Streamer::startFilterStream() {
     if ( reply->error() !=QNetworkReply::NoError ) {
         delete reply;
         reply = nullptr;
-        emit abort ( TwitterCore::CannotConnect );
+        return emit abort ( TwitterCore::CannotConnect );
     }
     connect ( reply,&QNetworkReply::readyRead,this,&Streamer::readStream ); //qnet->getの前にconnectしたい(ただQtのサンプルを見る限り間違った実装ではなさそう)
     connect ( reply,&QNetworkReply::finished,this,&Streamer::finishedStream );
@@ -145,20 +145,17 @@ void Streamer::readStream() {
             return delete twdata;
         }
 #endif
-        emit newTweet ( twdata );
-        return;
+        return emit newTweet ( twdata );
     } else {
         delete twdata;
     }
     TwitterJson::NotificationData *nfdata = new TwitterJson::NotificationData ( json,twitter->getUserId() );
     if ( !nfdata->isEmpty() ) {
-        emit newNotification ( nfdata );
-        return;
+        return emit newNotification ( nfdata );
     } else {
         delete nfdata;
     }
-    if ( QString &&id = TwitterJson::getDeletedTweetId ( json ); !id.isEmpty() ) emit deleteTweet ( id );
-
+    if ( QString &&id = TwitterJson::getDeletedTweetId ( json ); !id.isEmpty() ) return emit deleteTweet ( id );
     return;
 }
 
