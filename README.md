@@ -57,7 +57,7 @@ https://repo.taprix.org/pg_mana/linux/rpm/x86_64/ はx86_64用のrpmリポジト
 
 ## リンク
 ### SalmonについてのWebページ
-  https://mnas.info/soft/salmon/linux/
+  https://soft.taprix.org/product/salmon.html
 ### Qtのドキュメントページ
   https://doc.qt.io/
 ### 開発者のTwitterアカウント

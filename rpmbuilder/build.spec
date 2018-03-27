@@ -7,8 +7,8 @@
 #
 
 %define APP_NAME              salmon
-%define APP_VERSION         0.0.2
-%define APP_HOMEPAGE    https://mnas.info/soft/salmon/linux/
+%define APP_VERSION         0.0.3
+%define APP_HOMEPAGE    https://soft.taprix.org/product/salmon.html
 %define APP_LICENCE         Apache License, Version 2.0
 
 Summary: Salmon for Linux
