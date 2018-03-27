@@ -6,5 +6,6 @@
  * 設定後#errorの行を削除する。
  * 公開リポジトリなどに入れないようにすべき。
  */
+#error  Please set the CONS_KEY and CONS_SEC
 #define CONS_KEY    "Consumer Key"
 #define CONS_SEC    "Consumer Secret"

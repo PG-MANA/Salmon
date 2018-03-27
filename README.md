@@ -39,12 +39,18 @@ See LICENSE.md
 * cmake  3.1以上
 
 ### 方法
-cd プロジェクトディレクトリ  
-mkdir build  
-cd build  
-cmake ../  
-make  
+
+```shell
+cd Salmon
+cp src/Key.h.template src/Key.h
+#src/Key.hにCONS_KEYとCONS_SECを書き込む
+mkdir build
+cd build
+cmake ..
+make
 ./salmon
+```
+
 ### よくあるエラー
 * 「Please set the CONS_KEY and CONS_SEC」と出た => src/Key.hに https://apps.twitter.com より取得してきたCONS_KEY CONS_SECを書き込み、「#error  Please set the CONS_KEY and CONS_SEC」の行を削除してください。
 
