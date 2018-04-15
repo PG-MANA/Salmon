@@ -67,6 +67,6 @@ https://repo.taprix.org/pg_mana/linux/rpm/x86_64/ はx86_64用のrpmリポジト
 ### Qtのドキュメントページ
   https://doc.qt.io/
 ### 開発者のTwitterアカウント
-  https://twitter.com/PG_MANA_
+  [https://twitter.com/PG_MANA_](https://twitter.com/PG_MANA_)
 ### 開発者のWebページ
   https://pg-mana.net
