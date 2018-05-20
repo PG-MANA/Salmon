@@ -19,4 +19,4 @@
 #define APP_HOMEPAGE         "https://soft.taprix.org/product/salmon.html"
 #define APP_COPYRIGHT        "Copyright 2017 PG_MANA"
 
-#define ENABLE_NEW_STREAM   false
+#define ENABLE_NEW_STREAM   true // 2018/08/16にUser Streamがなくなるため
