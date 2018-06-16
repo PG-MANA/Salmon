@@ -57,7 +57,7 @@ make
 ## ビルド済みバイナリ
 * RPM(x86_64) https://repo.taprix.org/pg_mana/linux/rpm/x86_64/Salmon/
 
-https://repo.taprix.org/pg_mana/linux/rpm/x86_64/ はx86_64用のrpmリポジトリになっています。
+https://repo.taprix.org/pg_mana/linux/rpm/ はrpmリポジトリになっています。
 ## 備考
 * Gitリポジトリに上げる際、Key.hをGit管理対象から外すなどしたほうが良いです。
 
