@@ -14,8 +14,8 @@
 //設定
 #define USER_AGENT           "Salmon for Linux"
 #define APP_NAME             "Salmon"
-#define APP_NAME_LONG   "Salmon for Linux"
-#define APP_VERSION          "0.0.3 Dev"
+#define APP_NAME_LONG        "Salmon for Linux"
+#define APP_VERSION          "0.0.3"
 #define APP_HOMEPAGE         "https://soft.taprix.org/product/salmon.html"
 #define APP_COPYRIGHT        "Copyright 2017 PG_MANA"
 
