@@ -35,8 +35,8 @@ See LICENSE.md
 ### 環境
 * Qt 5.9 (Qt5::Widgets Qt5::Network) 開発用ヘッダファイルなど
 * Phonon4qt5 開発用ヘッダファイルなど  (無い場合自動的にQtMultiMediaを選択しますが、一部環境では動画が再生できない可能性があります)
-* c++17対応C++コンパイラ
-* cmake  3.1以上
+* C++17対応C++コンパイラ
+* CMake  3.1以上
 
 ### 方法
 
@@ -60,7 +60,7 @@ make
 https://repo.taprix.org/pg_mana/linux/rpm/ はrpmリポジトリになっています。
 ## 備考
 * Gitリポジトリに上げる際、Key.hをGit管理対象から外すなどしたほうが良いです。
-
+* 開発はSweetfish(マストドン向けクライアント)に移行しました。
 ## リンク
 ### SalmonについてのWebページ
   https://soft.taprix.org/product/salmon.html
