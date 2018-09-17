@@ -18,9 +18,7 @@ int main ( int argc, char *argv[] ) {
     QApplication app ( argc, argv );
     //全般設定
     QTextCodec::setCodecForLocale ( QTextCodec::codecForName ( "UTF-8" ) );
-    app.setWindowIcon ( QIcon ( ":/icon-normal.png" ) ); //埋め込み
-
-    char setting_file[] = "default.ini";//今のところこれ(コマンドラインから指定できるようにしても良さそう。)
+    app.setWindowIcon ( QIcon ( ":/icon-normal.png" ) ); //埋め込みMainWindow window;
     MainWindow window;
-    return window.init ( setting_file ) ?window.show(),app.exec() :EXIT_FAILURE;
+    return window.init ( "default.ini" ) ?window.show(),app.exec() :EXIT_FAILURE;
 }

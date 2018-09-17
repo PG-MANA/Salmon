@@ -87,22 +87,22 @@ void TweetContent::createActions() {
     }
     //リツイート
     popup->addSection ( ( twdata->text.size() >15 ) ?twdata->text.left ( 15 ).append ( "..." ) :twdata->text ); //使い方合ってるんかいな...
-    popup->addAction ( QIcon ( ":/rt.png" ),tr ( "Retweet(&T)" ),this,&TweetContent::triggeredAction )->setData ( TwitterCore::Action::Retweet );
+    popup->addAction ( QIcon ( ":/rt.png" ),tr ( "リツイート(&T)" ),this,&TweetContent::triggeredAction )->setData ( TwitterCore::Action::Retweet );
 
     //引用ツイート
-    popup->addAction ( QIcon ( ":/rt.png" ),tr ( "Quote Tweet(&Q)" ),this,&TweetContent::triggeredAction )->setData ( TwitterCore::Action::QuoteTweet );
+    popup->addAction ( QIcon ( ":/rt.png" ),tr ( "引用ツイート(&Q)" ),this,&TweetContent::triggeredAction )->setData ( TwitterCore::Action::QuoteTweet );
 
     //リプライ
-    popup->addAction ( QIcon ( ":/rp.png" ),tr ( "Reply(&R)" ),this,&TweetContent::triggeredAction )->setData ( TwitterCore::Action::Reply );
+    popup->addAction ( QIcon ( ":/rp.png" ),tr ( "返信(&R)" ),this,&TweetContent::triggeredAction )->setData ( TwitterCore::Action::Reply );
 
     //お気に入り(今はいいねだが...)
-    popup->addAction ( QIcon ( ":/fav.png" ),tr ( "Favorite(&F)" ),this,&TweetContent::triggeredAction )->setData ( TwitterCore::Action::Favorite );
+    popup->addAction ( QIcon ( ":/fav.png" ),tr ( "いいね(&F)" ),this,&TweetContent::triggeredAction )->setData ( TwitterCore::Action::Favorite );
 
     //削除(権限がある場合)
-    if ( twdata->isMytweet() ) popup->addAction ( style()->standardIcon ( QStyle::SP_TitleBarCloseButton ) /*少し意図がずれてる気が*/,tr ( "Delete(&D)" ),this,&TweetContent::triggeredAction )->setData ( TwitterCore::Action::Destroy );
+    if ( twdata->isMytweet() ) popup->addAction ( style()->standardIcon ( QStyle::SP_TitleBarCloseButton ) /*少し意図がずれてる気が*/,tr ( "削除(&D)" ),this,&TweetContent::triggeredAction )->setData ( TwitterCore::Action::Destroy );
 
     //新しいウィンドウで開く(取っておきたいなど)
-    popup->addAction ( style()->standardIcon ( QStyle::SP_TitleBarMaxButton ),tr ( "Open in new window(&W)" ),this,&TweetContent::openWindow );
+    popup->addAction ( style()->standardIcon ( QStyle::SP_TitleBarMaxButton ),tr ( "別ウィンドウで開く(&W)" ),this,&TweetContent::openWindow );
 
     if ( twdata->url_info ) {
         popup->addSection ( tr ( "URL" ) );

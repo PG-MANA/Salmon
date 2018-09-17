@@ -7,7 +7,6 @@
 
 #include <algorithm>
 #include <stdint.h>
-#define NOT_ROL //_rolが使える場合はこのdefineを外したほうがいいことあるかも
 
 /* SHA1_Context */
 struct SHA1_Context {

@@ -46,4 +46,3 @@ protected:
     unsigned int index;//何番目か(0から始まる)
     unsigned int sizex,sizey;//縮小サイズ(0なら縮小しない)
 };
-

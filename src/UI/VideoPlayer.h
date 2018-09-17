@@ -31,7 +31,6 @@ public:
 
 public slots:
     void show();
-    void save() {}; //未実装
 private:
     void createButtons ( QVBoxLayout *main_layout );
     TwitterJson::MediaInfo media_data;

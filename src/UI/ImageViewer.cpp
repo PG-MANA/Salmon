@@ -19,7 +19,6 @@ ImageViewer::ImageViewer ( TwitterJson::TweetData *twdata,unsigned int index,QWi
 
     QVBoxLayout *main_layout = new QVBoxLayout ( this );
     QScrollArea *image_area = new QScrollArea;
-    QLabel *open_link = new QLabel ( "<a href=\"" + media_data.url + "\" >" + tr ( "ブラウザで開く" ) + "</a>" ); //おまけ
     iml = new ImageLabel ( 0,0,0,nullptr );
 
     setWindowTitle ( tr ( "画像の詳細 " APP_NAME ) );
@@ -32,9 +31,6 @@ ImageViewer::ImageViewer ( TwitterJson::TweetData *twdata,unsigned int index,QWi
     image_area->setWidgetResizable ( true );
     image_area->setWidget ( iml ); //先に追加しておいてボタンを下に持ってくる
     main_layout->addWidget ( image_area );
-    //リンク
-    open_link->setOpenExternalLinks ( true );
-    main_layout->addWidget ( open_link );
     //ボタン作成
     createButtons ( main_layout );
 

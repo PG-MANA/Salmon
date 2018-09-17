@@ -85,4 +85,3 @@ void VideoPlayer::createButtons ( QVBoxLayout* main_layout ) {
     main_layout->addLayout ( button_layout );
     return;
 }
-

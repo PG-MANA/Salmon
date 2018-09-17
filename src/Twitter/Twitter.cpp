@@ -13,7 +13,7 @@
 #include "TwitterSetting.h"
 #include "../Network/OAuth.h"
 #include "../Network/Network.h"
-#include "../Salmon.h"
+#include "../Key.h"
 #include <QtCore>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -118,23 +118,6 @@ QNetworkReply *Twitter::home_timeline ( const QByteArray &since_id ) {
     req.setUrl ( qurl );
     get ( TwitterUrl::home_timeline,req,ele );
     return net.get ( req );
-}
-
-/*
- * 引数:なし
- * 戻値:getしたあとのQNetworkReply
- * 概要:UserStream、いわゆるタイムラインのストリーム。delimited=lengthがつく。
- */
-QNetworkReply *Twitter::user_stream() {
-    QNetworkRequest req;
-    std::vector<OAuth::entry> ele;
-    QUrl qurl ( TwitterUrl::user_stream );
-
-    qurl.setQuery ( QUrlQuery ( "delimited=length" ) );
-    req.setUrl ( qurl );
-    ele.push_back ( OAuth::entry {"delimited","length",true} );
-    get ( TwitterUrl::user_stream,req,ele );
-    return  net.get ( req );
 }
 
 /*
@@ -281,20 +264,6 @@ QNetworkReply *Twitter::media_upload_finalize ( const QByteArray &media_id ) {
     req.setUrl ( QUrl ( TwitterUrl::media_upload ) );
     //送信
     return net.post ( req,QByteArray ( "command=FINALIZE&media_id=" ) + media_id );
-}
-
-/*
- * 引数:なし
- * 戻値:getしたあとのQNetworkReply
- * 概要:自分の保持してるList一覧を取る。
- */
-QNetworkReply *Twitter::get_lists() {
-    std::vector<OAuth::entry> ele;
-    QNetworkRequest req;
-    get ( TwitterUrl::lists_list,req,ele );
-    req.setUrl ( QUrl ( TwitterUrl::lists_list ) );
-    //送信
-    return net.get ( req );
 }
 
 /*

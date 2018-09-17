@@ -311,7 +311,7 @@ void MainWindow::abortedTimeLine ( unsigned int error ) {
     }
     if ( mes_box.exec() == QMessageBox::Yes ) {
         stream_status->setChecked ( true );
-        QMetaObject::invokeMethod ( timeline_streamer,"startUserStream",Qt::QueuedConnection );
+        QMetaObject::invokeMethod ( timeline_streamer,"startFilterStream",Qt::QueuedConnection );
     }
     return;
 }
@@ -323,8 +323,8 @@ void MainWindow::abortedTimeLine ( unsigned int error ) {
  */
 void MainWindow::changeStatusStream ( bool checked ) {
     //この処理ではいつか問題が生じるのでもっと細かく制御すべき
-    if ( checked ) QMetaObject::invokeMethod ( timeline_streamer,"startUserStream",Qt::QueuedConnection );
-    else timeline_streamer->stopUserStream();
+    if ( checked ) QMetaObject::invokeMethod ( timeline_streamer,"startFilterStream",Qt::QueuedConnection );
+    else timeline_streamer->stopFilterStream();
     return;
 }
 
@@ -336,21 +336,6 @@ void MainWindow::changeStatusStream ( bool checked ) {
 void MainWindow::show() {
     QMainWindow::show();
     connect ( twitter->home_timeline(),&QNetworkReply::finished,this,&MainWindow::showTimeLine );
-    //connect ( twitter->get_lists(),&QNetworkReply::finished,this,&MainWindow::setListsMenu );
-    return;
-}
-
-/*
- * 引数:なし
- * 戻値:なし
- * 概要:ウィンドウ表示の際、メニューの表示=>リストに所持してるリストを設定する。
- */
-void MainWindow::setListsMenu() {
-    QNetworkReply *rep = qobject_cast<QNetworkReply*> ( sender() );
-    auto result = TwitterJson::getListInfo ( QJsonDocument::fromJson ( rep->readAll() ).array() );
-    for ( int cnt = 0,len = result.size(); cnt < len; cnt++ ) {
-        list_menu->addAction ( result[cnt].second,this,[] {/*Temporary*/} )->setData ( result[cnt].first );
-    }
     return;
 }
 
@@ -371,12 +356,7 @@ void MainWindow::showTimeLine() {
         }
     }
     rep->deleteLater();
-    if ( stream_status->isChecked() ) QMetaObject::invokeMethod ( timeline_streamer,"startUserStream",Qt::QueuedConnection ); //ストリームスタート
-#if ENABLE_NEW_STREAM
-    tray_info->show();
-     tray_info->showMessage ( APP_NAME,tr("現在UserStreamの代替としてFilterStreamを使用しています。これにより次のような仕様となっています。\n・鍵アカウントのツイートは取得できません。\n・フォロー通知などを受信できません。\n・フォローしていないアカウントへの返信を表示します。\n・5,000人以上フォローしているアカウントはすべてのツイートを表示できません。\n・全体的な動作が重くなります。") );
-     tray_info->hide();
-#endif
+    if ( stream_status->isChecked() ) QMetaObject::invokeMethod ( timeline_streamer,"startFilterStream",Qt::QueuedConnection ); //ストリームスタート
     return;
 }
 
@@ -823,10 +803,3 @@ void MainWindow::contentAction ( TwitterJson::TweetData *twdata,unsigned int act
     }
     return;
 }
-
-
-
-
-
-
-

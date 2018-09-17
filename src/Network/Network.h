@@ -12,7 +12,6 @@
 
 #include <QNetworkAccessManager>
 
-
 class QNetworkRequest;
 class QNetworkReply;
 class QUrl;

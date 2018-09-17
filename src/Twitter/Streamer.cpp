@@ -10,7 +10,6 @@
 #include "Streamer.h"
 #include "Twitter.h"
 #include "TwitterJson.h"
-#include "../Salmon.h" // ENABLE_NEW_STREAM
 #include <QNetworkReply>
 #include <QUrlQuery>
 #include <QJsonObject>
@@ -22,7 +21,7 @@ Streamer::Streamer ( QObject *parent )
 }
 
 Streamer::~Streamer() {
-    stopUserStream();
+    stopFilterStream();
     delete twitter;
 }
 
@@ -38,43 +37,28 @@ void Streamer::setTwitter ( const TwitterSetting *twset ) {
 /*
  * 引数:なし
  * 戻値:なし
- * 概要:user_streamを開始する。reply->closeするか、deleteするまで永遠と動く。
+ * 概要:filter_streamを開始する。まずはフォローしている人のIDを取得する。
  */
-#if ENABLE_NEW_STREAM
-void Streamer::startUserStream() {
+void Streamer::startFilterStream() {
+    if ( !friend_ids.isEmpty() ) return finishedGettingFriendIds();
     if ( twitter == nullptr ) return emit abort ( TwitterCore::BadPointer );
     if ( reply != nullptr && reply->isRunning() ) return;
     reply = twitter->friends_ids();
-    if ( reply->error() !=QNetworkReply::NoError ) {
+    if ( reply->error() != QNetworkReply::NoError ) {
         delete reply;
         reply = nullptr;
         return emit abort ( TwitterCore::CannotConnect );
     }
-    connect ( reply,&QNetworkReply::finished,this,&Streamer::startFilterStream );
+    connect ( reply,&QNetworkReply::finished,this,&Streamer::finishedGettingFriendIds );
     return;
 }
-#else
-void Streamer::startUserStream() {
-    if ( twitter == nullptr ) return emit abort ( TwitterCore::BadPointer );
-    if ( reply != nullptr && reply->isRunning() ) return;
-    reply = twitter->user_stream();
-    if ( reply->error() !=QNetworkReply::NoError ) {
-        delete reply;
-        reply = nullptr;
-        return emit abort ( TwitterCore::CannotConnect );
-    }
-    connect ( reply,&QNetworkReply::readyRead,this,&Streamer::readStream ); //qnet->getの前にconnectしたい(ただQtのサンプルを見る限り間違った実装ではなさそう)
-    connect ( reply,&QNetworkReply::finished,this,&Streamer::finishedStream );
-    return;
-}
-#endif
 
 /*
  * 引数:なし
  * 戻値:なし
- * 概要:friends_idsをもとにfilter_streamを開始する。reply->closeするか、deleteするまで永遠と動く。暫定処理
+ * 概要:friends_idsをもとにfilter_streamを開始する。reply->closeするか、deleteするまで永遠と動く。
  */
-void Streamer::startFilterStream() {
+void Streamer::finishedGettingFriendIds() {
     if ( reply->error() !=QNetworkReply::NoError ) {
         delete reply;
         reply = nullptr;
@@ -98,13 +82,12 @@ void Streamer::startFilterStream() {
     return;
 }
 
-
 /*
  * 引数:なし
  * 戻値:なし
- * 概要:user_streamを停止する。スレッドは削除されない。なおこのときfinishedシグナルが出される。
+ * 概要:filter_streamを停止する。スレッドは削除されない。なおこのときfinishedシグナルが出される。
  */
-void Streamer::stopUserStream() {
+void Streamer::stopFilterStream() {
     if ( reply != nullptr ) {
         reply->close();
         delete reply;
@@ -140,11 +123,9 @@ void Streamer::readStream() {
 
     TwitterJson::TweetData *twdata = new TwitterJson::TweetData ( json,twitter->getUserId() );
     if ( !twdata->isEmpty() ) {
-#if ENABLE_NEW_STREAM
         if(!friend_ids.contains(twdata->user_info.id)){//エグいにも程がある
             return delete twdata;
         }
-#endif
         return emit newTweet ( twdata );
     } else {
         delete twdata;
@@ -167,7 +148,7 @@ void Streamer::readStream() {
 void Streamer::finishedStream() {
     if ( reply ) {
         QNetworkReply::NetworkError error = reply->error();
-        if ( reply->isRunning() ) stopUserStream();
+        if ( reply->isRunning() ) stopFilterStream();
         if ( error != QNetworkReply::OperationCanceledError ) emit abort ( TwitterCore::NetworkError );
     }
     return;

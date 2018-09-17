@@ -83,4 +83,3 @@ QString TextLabel::text() const {
     for ( const QString &line : string ) result+=line;
     return result;
 }
-

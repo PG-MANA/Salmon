@@ -1,5 +1,4 @@
 /*
- * 
  * SHA1cc.c
  * SHA1ハッシュを出す。
  * これは https://osdn.jp/projects/sha1cc/ の改造版です。
@@ -7,13 +6,8 @@
 #include "SHA1cc.h"
 #include <string.h>
 
-
 /* */
-#ifdef NOT_ROL
 #define ROL(v, b) (((v) << (b)) | ((v) >> (32-(b))))
-#else
-#define ROL(v, b) _rotl((v), (b))
-#endif
 #define BSW(v) __builtin_bswap32((v))
 
 /* */
@@ -217,4 +211,3 @@ void SHA1cc_Finalize(
     *((uint32_t*)(digest + 0x0c)) = UI32(t->State[3]);
     *((uint32_t*)(digest + 0x10)) = UI32(t->State[4]);
 }
-
