@@ -12,7 +12,6 @@
 #include <QSettings>
 #include <QDir>
 
-
 TwitterSetting::TwitterSetting ( const QString &file_name ) : setting ( getFilePath ( file_name ), QSettings::IniFormat ) {
     setting.beginGroup ( "Twitter" );
     strcpy ( user_id,setting.value ( "User_id","" ).toByteArray().constData() );

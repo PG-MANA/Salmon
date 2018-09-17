@@ -53,9 +53,6 @@ public:
     //ユーザ関係
     QNetworkReply *friends_ids ( const QByteArray &cursor = QByteArray() );
 
-    //リスト関係
-    QNetworkReply *get_lists();
-
 protected:
     /*汎用関数。あくまでTwitterクラスから呼ぶもので他のクラス(UIなど)からはこれを呼ばず専用の関数を作る。*/
     void get ( const char *uri,QNetworkRequest &req,std::vector<OAuth::entry> &ele ); //Requestを作成するだけ

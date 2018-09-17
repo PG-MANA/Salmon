@@ -85,4 +85,3 @@ void MediaUpload::retry() {
     start();
     return;
 }
-

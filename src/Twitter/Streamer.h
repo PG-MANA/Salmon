@@ -36,13 +36,13 @@ signals:
 
 public slots:
     void setTwitter ( const TwitterSetting *twset );
-    void startUserStream();
-    void stopUserStream();
+    void startFilterStream();
+    void stopFilterStream();
     void readStream();
     void finishedStream();
-    void startFilterStream();
 
-protected:
+private:
+    void finishedGettingFriendIds();
     qint64 json_size;
     QString friend_ids;
     Twitter *twitter;

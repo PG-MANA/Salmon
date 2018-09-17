@@ -14,7 +14,6 @@
 #include <QDateTime>
 #include <QVector>
 
-
 namespace TwitterJson {
 
 UserInfo::UserInfo ( const QJsonObject &json ) {
@@ -286,4 +285,3 @@ QVector<QPair<QByteArray,QString>> getListInfo ( const QJsonArray &json ) {
     return res;
 }
 }
-

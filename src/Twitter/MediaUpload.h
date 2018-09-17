@@ -39,4 +39,3 @@ private:
     Twitter *twitter;
     unsigned int counter;
 };
-

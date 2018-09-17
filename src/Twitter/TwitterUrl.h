@@ -18,7 +18,6 @@ static const char request_token[] = "https://api.twitter.com/oauth/request_token
 static const char home_timeline[] = "https://api.twitter.com/1.1/statuses/home_timeline.json";
 
 //ストリーム関係
-static const char user_stream[] = "https://userstream.twitter.com/1.1/user.json";
 static const char filter_stream[] = "https://stream.twitter.com/1.1/statuses/filter.json";
 
 //ツイート関係

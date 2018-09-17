@@ -37,12 +37,7 @@ void OAuth::makeOAuthHeader ( const char *url, bool post, std::vector<OAuth::ent
     char                   buf[buff_size];
 
     //下準備
-#if(QT_VERSION>=QT_VERSION_CHECK(5,8,0))
     timestamp = QString::number ( QDateTime::currentDateTimeUtc().toSecsSinceEpoch() ).toLatin1(); //Qt5.8以降
-#else
-    //time_tはulonglong だから2038年問題には強そうだが、Qt 5.8が使えるようになり次第、この行は廃止する。
-    timestamp = QString::number ( QDateTime::currentDateTimeUtc().toTime_t() ).toLatin1() /*数字だけのはず*/;
-#endif
     nonce = QString::number ( QTime::currentTime().msec() ).toLatin1(); //qrand使わんでもこれで事足りそう。
 
     //とりあえず必要項目をプッシュする。
@@ -123,5 +118,3 @@ void OAuth::HMAC_SHA1 ( const char *key, const char *data, char buff[buff_size] 
     SHA1cc_Finalize ( &t, ( uint8_t * ) buff );
     return;
 }
-
-
